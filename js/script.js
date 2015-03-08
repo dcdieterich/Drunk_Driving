@@ -36,7 +36,7 @@ var svg = d3.select(".chart").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 d3.csv("js/crashes.csv", function(error, data) {
-  color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
+color.domain(d3.keys(data[0]).filter(function(key) { return key === "Cr change" || key === "Ft change" }));
 
   data.forEach(function(d) {
     d.Yr = parseDate(d.Yr);
@@ -46,7 +46,7 @@ d3.csv("js/crashes.csv", function(error, data) {
     return {
       name: name,
       values: data.map(function(d) {
-        return {date: d.Yr, change: +d[name]};
+        return {date: d.date, change: +d[name]};
       })
     };
   });
@@ -78,13 +78,11 @@ d3.csv("js/crashes.csv", function(error, data) {
     .enter().append("g")
       .attr("class", "type");
 
-  type.append("path")
-      // .attr("class", "line")
-      // .attr("d", function(d) { return line(d.values); })
-      // .style("stroke", function(d) { return color(d.name); });
-       .datum(data)
+ type.append("path")
       .attr("class", "line")
-      .attr("d", line);
+      .attr("d", function(d) {
+        return line(d.values);
+      });
 
   type.append("text")
       .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
