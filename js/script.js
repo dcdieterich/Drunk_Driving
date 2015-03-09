@@ -46,7 +46,7 @@ color.domain(d3.keys(data[0]).filter(function(key) { return key === "Cr change" 
     return {
       name: name,
       values: data.map(function(d) {
-        return {date: d.date, change: +d[name]};
+        return {date: d.Yr, change: +d[name]};
       })
     };
   });
