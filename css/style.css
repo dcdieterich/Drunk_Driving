@@ -26,3 +26,25 @@ h4{
 .chart {
   height: 500px;
 }
+
+
+.tt {
+  background-color: white;
+  font-size: 13px;
+  position: absolute;
+  display: none;
+  padding: 8px;
+  box-shadow: 2px 2px 6px #666;
+
+}
+
+.tt .date {
+  font-size: 11px;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.tt .val {
+  font-size: 18px;
+  font-weight: bold;
+}

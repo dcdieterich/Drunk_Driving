@@ -83,11 +83,55 @@ color.domain(d3.keys(data[0]).filter(function(key) { return key === "Cr change" 
       .attr("d", function(d) {
         return line(d.values);
       });
-
   type.append("text")
       .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
       .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.change) + ")"; })
       .attr("x", 3)
       .attr("dy", ".35em")
       .text(function(d) { return d.name; });
-});
+
+
+  svg.selectAll(".dot")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("class", "dot") 
+    .attr("cx", function(d){
+      return x(d.date);
+    })   
+    .attr("cy", function(d){
+      return y(d.change);
+    })
+    .attr("r", 5)
+    .on("mouseover", function(d){
+      var yearFormat=d3.time.format("%Y");
+      var dispDate=yearFormat(d.date);
+      var dispChange=String(d.change.toFixed(3)).replace("0.",".");
+
+      $(".tt").html(
+        "<div class='date'>"+dispDate+"</div>"+
+        "<div class='val'>"+dispChange+"</div>"
+        );
+         d3.select(this).classed("active", true);
+         $(".tt").show();
+    })
+    .on("mouseout", function(d) {
+
+      //Remoing .active class to this circle so it turns back to blue.
+      d3.select(this).classed("active", false);
+      
+      $(".tt").hide();
+    })
+    .on("mousemove", function(d){
+        var pos = d3.mouse(this);
+        var left = pos[0] + margin.left + 15 - ($(".tt").outerWidth()/2);
+        var top = pos[1] + margin.top - $(".tt").height() - 30;
+
+        $(".tt").css({
+        "left" : left+"px",
+        "top" : top+"px"
+      });
+    });
+    });
+
+  
