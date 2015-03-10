@@ -1498,11 +1498,13 @@
 
     function currentDateArray(config) {
         var now = new Date();
+        var now.getFullYear();
         if (config._useUTC) {
             return [
                 now.getUTCFullYear(),
                 now.getUTCMonth(),
-                now.getUTCDate()
+                now.getUTCDate(),
+
             ];
         } else {
             return [now.getFullYear(), now.getMonth(), now.getDate()];
