@@ -26,7 +26,7 @@ var yAxis = d3.svg.axis()
 
 var line = d3.svg.line()
     .interpolate("basis")
-    .x(function(d) { return x(d.Yr); })
+    .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.change); });
 
 var svg = d3.select(".chart").append("svg")
@@ -86,7 +86,7 @@ color.domain(d3.keys(data[0]).filter(function(key) { return key === "Cr change" 
 
   type.append("text")
       .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
-      .attr("transform", function(d) { return "translate(" + x(d.value.Yr) + "," + y(d.value.change) + ")"; })
+      .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.change) + ")"; })
       .attr("x", 3)
       .attr("dy", ".35em")
       .text(function(d) { return d.name; });
