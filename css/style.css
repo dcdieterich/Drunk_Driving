@@ -28,11 +28,13 @@ h4{
 
 
 .tt {
-  background-color: white;
+  background-color: black ;
   font-size: 13px;
   position: absolute;
   display: none;
   padding: 8px;
+  color: white;
+
 
   box-shadow: 2px 2px 6px #666;
 
@@ -40,7 +42,8 @@ h4{
 
 .tt .date {
   font-size: 11px;
-  color: #999;
+  font-weight: bold;
+  color: #C0C0C0 ;
   text-transform: uppercase;
 }
 

@@ -16,7 +16,7 @@ var y = d3.scale.linear()
 
 var color = d3.scale.ordinal()
   .domain(["Fatalities change", "Crashes change"])
-  .range(["#FF0000", "#0000FF"]);
+  .range(["#B80000" , "steelblue"]);
 
 var xAxis = d3.svg.axis()
     .scale(x)
@@ -52,20 +52,19 @@ d3.csv("js/crashes.csv", function(error, data) {
   });
 
 
-  color.domain(d3.keys(data[0]).filter(function(key) { return key === "Fatalities change" || key === "Crashes change"; }));
-
-  
+  color.domain(d3.keys(data[0]).filter(function(key) {
+    return key === "Fatalities change" || key === "Crashes change";
+  }));
 
   var types = color.domain().map(function(name) {
     return {
       name: name,
       values: data.map(function(d) {
-        return {date: d.Yr, change: +d[name]};
+      
+        return {date: d.Yr, change: +d[name], crashes : d.Crashes, fatalities : d.Fatalities, seriesName : name};
       })
     };
   });
-
-  console.log(data, types);
 
   x.domain(d3.extent(data, function(d) { return d.Yr; }));
 
@@ -111,10 +110,14 @@ d3.csv("js/crashes.csv", function(error, data) {
       .text(function(d) { return d.name; });
 
 
- svg.selectAll(".dot")
-      .data(types)
-      .enter()
-      .append("circle")
+
+
+type.selectAll(".dot")
+    .data(function(d) {
+      return d.values;
+    })
+    .enter()
+    .append("circle")
     .attr("class", "dot")
     .attr("cx", function(d) {
       return x(d.date);
@@ -122,17 +125,32 @@ d3.csv("js/crashes.csv", function(error, data) {
     .attr("cy", function(d) {
       return y(d.change);
     })
-    .attr("r", 5)
-
+    .attr("r", 3.5)
     .on("mouseover", function(d) {  
+
       var yearFormat = d3.time.format("%Y");
       var dispDate = yearFormat(d.date);
-      var dispAvg = String(d.AVG.toFixed(3)).replace("0.", ".");
+      
+     
+      var actualLabel;
+      var actualVal;
 
- 
+      if (d.seriesName == "Fatalities change") {
+        actualLabel = "Total Fatalities";
+        actualVal = d.fatalities;
+      } else {
+        actualLabel = "Total Crashes";
+        actualVal = d.crashes;
+      }
+
       $(".tt").html(
         "<div class='date'>"+dispDate+"</div>"+
-        "<div class='val'>"+dispChange+"</div>"
+        "<div class='val'>"+
+          actualLabel+": <b>"+actualVal+"</b>"+
+        "</div>"+
+        "<div class='change'>"+
+          "Change since 2004: <b>"+d.change+"%</b>"+
+        "</div>"
       );
 
       d3.select(this).classed("active", true);
