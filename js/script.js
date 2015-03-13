@@ -14,7 +14,9 @@ var x = d3.time.scale()
 var y = d3.scale.linear()
     .range([height, 0]);
 
-var color = d3.scale.category10();
+var color = d3.scale.ordinal()
+  .domain(["Fatalities change", "Crashes change"])
+  .range(["#FF0000", "#0000FF"]);
 
 var xAxis = d3.svg.axis()
     .scale(x)
@@ -22,12 +24,19 @@ var xAxis = d3.svg.axis()
 
 var yAxis = d3.svg.axis()
     .scale(y)
-    .orient("left");
+    .orient("left")
+    .tickFormat(function(d){
+      return d+"%";
+    });
+
 
 var line = d3.svg.line()
-    .interpolate("basis")
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.change); });
+    .x(function(d) {
+      return x(d.date);
+    })
+    .y(function(d) {
+      return y(d.change);
+    });
 
 var svg = d3.select(".chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -36,11 +45,16 @@ var svg = d3.select(".chart").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 d3.csv("js/crashes.csv", function(error, data) {
-color.domain(d3.keys(data[0]).filter(function(key) { return key === "Cr change" || key === "Ft change" }));
+
 
   data.forEach(function(d) {
     d.Yr = parseDate(d.Yr);
   });
+
+
+  color.domain(d3.keys(data[0]).filter(function(key) { return key === "Fatalities change" || key === "Crashes change"; }));
+
+  
 
   var types = color.domain().map(function(name) {
     return {
@@ -50,6 +64,8 @@ color.domain(d3.keys(data[0]).filter(function(key) { return key === "Cr change" 
       })
     };
   });
+
+  console.log(data, types);
 
   x.domain(d3.extent(data, function(d) { return d.Yr; }));
 
@@ -71,7 +87,9 @@ color.domain(d3.keys(data[0]).filter(function(key) { return key === "Cr change" 
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Percentage change");
+      .text("Percent change");
+
+
 
   var type = svg.selectAll(".type")
       .data(types)
@@ -82,7 +100,9 @@ color.domain(d3.keys(data[0]).filter(function(key) { return key === "Cr change" 
       .attr("class", "line")
       .attr("d", function(d) {
         return line(d.values);
-      });
+      })
+      .style("stroke", function(d) { return color(d.name); });
+
   type.append("text")
       .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
       .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.change) + ")"; })
@@ -91,47 +111,51 @@ color.domain(d3.keys(data[0]).filter(function(key) { return key === "Cr change" 
       .text(function(d) { return d.name; });
 
 
-  svg.selectAll(".dot")
-    .data(data)
-    .enter()
-    .append("circle")
-    .attr("class", "dot") 
-    .attr("cx", function(d){
+ svg.selectAll(".dot")
+      .data(types)
+      .enter()
+      .append("circle")
+    .attr("class", "dot")
+    .attr("cx", function(d) {
       return x(d.date);
-    })   
-    .attr("cy", function(d){
+    })
+    .attr("cy", function(d) {
       return y(d.change);
     })
     .attr("r", 5)
-    .on("mouseover", function(d){
-      var yearFormat=d3.time.format("%Y");
-      var dispDate=yearFormat(d.date);
-      var dispChange=String(d.change.toFixed(3)).replace("0.",".");
 
+    .on("mouseover", function(d) {  
+      var yearFormat = d3.time.format("%Y");
+      var dispDate = yearFormat(d.date);
+      var dispAvg = String(d.AVG.toFixed(3)).replace("0.", ".");
+
+ 
       $(".tt").html(
         "<div class='date'>"+dispDate+"</div>"+
         "<div class='val'>"+dispChange+"</div>"
-        );
-         d3.select(this).classed("active", true);
-         $(".tt").show();
-    })
-    .on("mouseout", function(d) {
+      );
 
-      //Remoing .active class to this circle so it turns back to blue.
-      d3.select(this).classed("active", false);
-      
+      d3.select(this).classed("active", true);
+
+      $(".tt").show();
+    })
+  
+    .on("mouseout", function(d) {
+      d3.select(this).classed("active", false); 
       $(".tt").hide();
     })
-    .on("mousemove", function(d){
-        var pos = d3.mouse(this);
-        var left = pos[0] + margin.left + 15 - ($(".tt").outerWidth()/2);
-        var top = pos[1] + margin.top - $(".tt").height() - 30;
 
-        $(".tt").css({
+    .on("mousemove", function(d) {
+      var pos = d3.mouse(this);
+      var left = pos[0] + margin.left + 15 - ($(".tt").outerWidth()/2);
+      var top = pos[1] + margin.top - $(".tt").height() - 30;
+      $(".tt").css({
         "left" : left+"px",
         "top" : top+"px"
       });
     });
-    });
+});
 
-  
+
+   
+   

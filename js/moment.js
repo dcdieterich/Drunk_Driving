@@ -1,4 +1,15 @@
- var moment,
+//! moment.js
+//! version : 2.9.0
+//! authors : Tim Wood, Iskren Chernev, Moment.js contributors
+//! license : MIT
+//! momentjs.com
+
+(function (undefined) {
+    /************************************
+        Constants
+    ************************************/
+
+    var moment,
         VERSION = '2.9.0',
         // the global-scope this is NOT the global object in Node.js
         globalScope = (typeof global !== 'undefined' && (typeof window === 'undefined' || window === global.window)) ? global : this,
@@ -1498,13 +1509,11 @@
 
     function currentDateArray(config) {
         var now = new Date();
-        var now.getFullYear();
         if (config._useUTC) {
             return [
                 now.getUTCFullYear(),
                 now.getUTCMonth(),
-                now.getUTCDate(),
-
+                now.getUTCDate()
             ];
         } else {
             return [now.getFullYear(), now.getMonth(), now.getDate()];
